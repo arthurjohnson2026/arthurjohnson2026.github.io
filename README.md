@@ -1,1 +1,1 @@
-# arthurjohnson2026.github.io
+# Stat355MidtermProject
