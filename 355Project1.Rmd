@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+Downloaded files from git, this is pulling from my computer and compiling all the csv's into one large one
 ```{r}
 
 dir_meeting_minutes <- "/Users/arthurjohnson/Downloads/fomc-hawkish-dovish/data/filtered_data/meeting_minutes_labeled"
@@ -96,9 +96,6 @@ combined_df <- bind_rows(df_list)
 
 combined_csv_path <- "/Users/arthurjohnson/Downloads/combined_speeches.csv"
 write_csv(combined_df, combined_csv_path)
-
-cat("Combined CSV file saved as", combined_csv_path, "\n")
-
 ```
 
 ```{r}
@@ -266,19 +263,6 @@ print(missing_values)
 
 ```
 
-```{r}
-combined_speeches1$date<-as.Date(combined_speeches1$date, format = "%Y-%m-%d")
-range(combined_speeches1$trading_date)
-
-range(fedfunds_data$date)
-
-range(ppi_data$date)
-
-range(cpi_data$date)
-
-range(balance_sheet_data$date)
-
-```
 ```{r}
 str(combined_speeches1$trading_date)
 sum(is.na(combined_speeches1$trading_date))
@@ -488,114 +472,6 @@ print(pca_loadings[,1:3])
 biplot(pca_result, scale = 0)
 
 ```
-
-MDS
-
-```{r}
-pca_data_scaled <- scale(pca_data)
-
-mds_data<-pca_data_scaled
-distance_matrix <- dist(mds_data)
-```
-
-```{r}
-analysis_data<-na.omit(analysis_data)
-mds_result <- cmdscale(distance_matrix, k = 2, eig = TRUE)
-
-mds_coordinates <- data.frame(
-  Dim1 = mds_result$points[, 1],
-  Dim2 = mds_result$points[, 2]
-)
-
-library(ggplot2)
-
-ggplot(mds_coordinates, aes(x = Dim1, y = Dim2)) +
-  geom_point() +
-  labs(title = "MDS Plot", x = "Dimension 1", y = "Dimension 2") +
-  theme_minimal()
-mds_coordinates <- data.frame(
-  Dim1 = mds_result$points[, 1],
-  Dim2 = mds_result$points[, 2],
-  dominant_sentiment = analysis_data$dominant_sentiment
-)
-
-ggplot(mds_coordinates, aes(x = Dim1, y = Dim2, color = dominant_sentiment)) +
-  geom_point(size = 3, alpha = 0.8) +
-  labs(
-    title = "MDS Plot Colored by Dominant Sentiment",
-    x = "Dimension 1",
-    y = "Dimension 2",
-    color = "Dominant Sentiment"
-  ) +
-  theme_minimal()
-
-mds_coordinates <- data.frame(
-  Dim1 = mds_result$points[, 1],
-  Dim2 = mds_result$points[, 2],
-  fed_funds_rate = analysis_data$fed_funds_rate
-)
-
-ggplot(mds_coordinates, aes(x = Dim1, y = Dim2, color = fed_funds_rate)) +
-  geom_point(size = 3, alpha = 0.8) +
-  labs(
-    title = "MDS Plot Colored by FFR",
-    x = "Dimension 1",
-    y = "Dimension 2",
-    color = "fed_funds_rate"
-  ) +
-  theme_minimal()
-
-# Extract MDS coordinates
-mds_coordinates <- data.frame(
-  Dim1 = mds_result$points[, 1],
-  Dim2 = mds_result$points[, 2],
-  inflation_rate = analysis_data$inflation_rate
-)
-
-ggplot(mds_coordinates, aes(x = Dim1, y = Dim2, color = inflation_rate)) +
-  geom_point(size = 3, alpha = 0.8) +
-  labs(
-    title = "MDS Plot Colored by Inflation Rate",
-    x = "Dimension 1",
-    y = "Dimension 2",
-    color = "inflation_rate"
-  ) +
-  theme_minimal()
-```
-```{r}
-
-library(ape)
-
-mst_edges <- mst(distance_matrix)
-coords <- mds_result$points
-edge_indices <- which(mst_edges != 0, arr.ind = TRUE)
-edges_df <- data.frame(
-  x1 = coords[edge_indices[, 1], 1],
-  y1 = coords[edge_indices[, 1], 2],
-  x2 = coords[edge_indices[, 2], 1],
-  y2 = coords[edge_indices[, 2], 2]
-)
-ggplot(mds_coordinates, aes(x = Dim1, y = Dim2)) +
-  geom_point(size = 3, alpha = 0.8) +
-  # Add MST edges
-  geom_segment(
-    data = edges_df,
-    aes(x = x1, y = y1, xend = x2, yend = y2),
-    color = "gray50",
-    size = 0.5
-  ) +
-  labs(
-    title = "MDS Plot with Minimum Spanning Tree",
-    x = "Dimension 1",
-    y = "Dimension 2",
-  ) +
-  theme_minimal()
-
-
-```
-
-
-
 
 ```{r}
 pc_scores <- as.data.frame(pca_result$x[, 1:4])
