@@ -1,1 +1,2 @@
-# Stat355MidtermProject
+# Stat355 Final Project
+
